@@ -1,94 +1,82 @@
+use std::{usize};
 
 use flutter_rust_bridge::frb;
+use crate::{frb_generated::BaseRustState, sequencer::SequencerPattern, PlaybackEngine, SequencerEngine};
 
-#[derive(Debug)]
+
 #[frb(ui_state)]
 pub struct RustState {
-    pub patterns: Vec<SequencerPattern>,
-    pub is_playing: bool,
-    pub bpm: i32,
-    pub current_step: i32
-
+    sequencer: SequencerEngine,
+    playback: PlaybackEngine,
+    // UI-specific state
+    selected_screen: usize,
+    selected_pattern_for_editing: usize,
+    is_pattern_editor_open: bool,
+    pattern: SequencerPattern,
 }
 
 impl RustState {
-    #[frb(sync)]
-    pub fn new() -> Self {
-        RustState {
-            patterns: vec![SequencerPattern::new(); 1],
-            is_playing: false, 
-            bpm: 120,
-            current_step: 0, 
-            base_state: Default::default()
-        }
-    }
-
-   #[frb(ui_mutation)]
-    pub fn increment_bpm(&mut self) {
-        self.bpm += 1;
-    }
-
-    #[frb(ui_mutation)]
-    pub fn decrement_bpm(&mut self) {
-        self.bpm -= 1;
-    }
-
-   #[frb(ui_mutation)]
-    pub fn start(&mut self) {    
-         self.is_playing = true;
-    }
-
-    #[frb(ui_mutation)]
-    pub fn stop(&mut self) {
-        self.is_playing = false;
-    }
-
-}
-
-#[derive(Debug, Clone)]
-#[frb(ui_state)]
-pub struct SequencerPattern{
-    pub step_length: f32, // 1:8 or 1:4 or ...
-    pub steps_per_beat: i32,
-    pub current_step: i32,
-    pub num_steps: i32,
-    pub steps: Vec<SequencerStep>,
-}
-
-impl SequencerPattern {
-    #[frb(sync)]
     pub fn new() -> Self {
         Self {
-            step_length: 0.25,
-            num_steps: 8,
-            current_step: 0,
-            steps: vec![SequencerStep::new()],
-            steps_per_beat: 4
-            base_state: Default::default()
-           
+            sequencer: SequencerEngine::new(),
+            playback: PlaybackEngine::new(),
+            selected_screen: 0,
+            selected_pattern_for_editing: 0,
+            is_pattern_editor_open: false,
+            base_state: BaseRustState::default(),
+            pattern: SequencerPattern::new()
         }
     }
-}
 
+    #[frb(ui_mutation)]
+    fn update_pattern(&mut self, pattern: SequencerPattern) {
+        self.pattern = pattern;
+    }
 
-#[derive(Debug, Clone)]
-#[frb(ui_state)]
-pub struct SequencerStep {
-    pub active: bool,
-    pub velocity: i32,
-    pub note: i32
-}
-
-impl SequencerStep {
+    // Command methods that Flutter can call
     #[frb(sync)]
-        pub fn new() -> Self {
-        SequencerStep {
-            note: 0,
-            velocity: 127,
-            active: false,
-            base_state: Default::default()
+    pub fn execute_command(&mut self, command: AppCommand) {
+        match command {
+            AppCommand::Play => {
+                self.playback.start();
+            }
+            AppCommand::Stop => {
+                self.playback.stop();
+            }
+            AppCommand::ToggleStep(step) => {
+                self.sequencer.toggle_step(step, self.selected_pattern_for_editing);
+            }
+            AppCommand::SelectPattern(index) => {
+                self.selected_pattern_for_editing = index;
+            }
+            AppCommand::SetTempo(tempo) => {
+                self.playback.set_tempo(tempo);
+            }
+            AppCommand::SelectScreen(screen) => {
+                self.selected_screen = screen;
+            }
+            AppCommand::ToggleStepSustain(step_index) => {
+                self.sequencer.toggle_step_sustain(step_index, self.selected_pattern_for_editing);
+            }
+            AppCommand::SetStepNote(note,step_index) => {
+                self.sequencer.set_step_note(note, step_index, self.selected_pattern_for_editing);
+            }
+            AppCommand::SetStepVelocity(velocity,step_index ) => {
+                self.sequencer.set_step_velocity(velocity, step_index, self.selected_pattern_for_editing);
+            }
+
         }
     }
 }
 
-
+pub enum AppCommand {
+    Play,
+    Stop,
+    ToggleStep(usize),
+    ToggleStepSustain(usize),
+    SetStepNote(i32, usize),
+    SetStepVelocity(i32, usize),
+    SelectPattern(usize),
+    SetTempo(f32),
+    SelectScreen(usize),
+}

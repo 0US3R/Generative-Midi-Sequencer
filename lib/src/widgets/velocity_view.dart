@@ -16,60 +16,51 @@ class VelocityView extends StatelessWidget {
     required this.gridStyle,
   });
 
-  int calculateVelocityFromButtonIndex(
-    int buttonIndex,
-    int scaleStepNumber,
-    int scaleStepSize,
-  ) {
-    return (scaleStepNumber - buttonIndex - 1) * scaleStepSize;
+  int calculateVelocityFromButtonIndex(int buttonIndex) {
+    return (gridStyle.velocityScaleStepNumber - buttonIndex) *
+        gridStyle.velocityScaleStepSize;
   }
 
-  bool isVelocityButtonActive(
-    int buttonIndex,
-    int velocityScaleStepNumber,
-    int velocityScaleStepSize,
-  ) {
+  bool isVelocityButtonActive(int buttonIndex) {
     if (step.velocity == 0) {
       return false;
     }
-    final buttonVelocity = calculateVelocityFromButtonIndex(
-      buttonIndex,
-      velocityScaleStepNumber,
-      velocityScaleStepSize,
-    );
+    final buttonVelocity = calculateVelocityFromButtonIndex(buttonIndex);
 
     return step.velocity >= buttonVelocity;
   }
 
   @override
   Widget build(BuildContext context) {
-    // FIX 5: Use flex to control space allocation in parent Column
     return Expanded(
-      flex: 3, // Takes 3/4 of the space in the parent Column
+      flex: 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: List.generate(gridStyle.velocityScaleStepNumber, (
-          velocityIndex,
-        ) {
+        children: List.generate(gridStyle.velocityScaleStepNumber, (index) {
           return Expanded(
             child: Container(
-              padding: gridStyle.getPadding(
+              padding: gridStyle.getVelocityButtonPadding(
                 isActive: step.active,
                 hasSustain: step.sustain,
               ),
               child: ElevatedButton(
-                style: gridStyle.getButtonStyle(
+                style: gridStyle.getVelocityButtonStyle(
                   isActive: step.active,
-                  isCurrent: true,
+                  isSelected: isVelocityButtonActive(index),
                 ),
-                onPressed: () {
-                  SequencerCommandSetStepVelocity(
-                    velocity: velocityIndex,
-                    stepIndex: stepIndex,
-                    patternIndex: patternIndex,
-                  ).sendSignalToRust();
-                },
-                child: Text("V$velocityIndex"), // Better labeling
+                onLongPress: SequencerCommandSetStepNote(
+                  note: index,
+                  stepIndex: stepIndex,
+                  patternIndex: patternIndex,
+                ).sendSignalToRust,
+                onPressed: SequencerCommandSetStepVelocity(
+                  velocity: calculateVelocityFromButtonIndex(index),
+                  stepIndex: stepIndex,
+                  patternIndex: patternIndex,
+                ).sendSignalToRust,
+                child: isVelocityButtonActive(index)
+                    ? Text("I")
+                    : Text("O"), // Better labeling
               ),
             ),
           );

@@ -8,104 +8,196 @@ extension CustomColorScheme on ColorScheme {
   Color get secondaryFixedDim => primary.withOpacity(0.7); // Example mapping
   Color get surfaceContainerLowest => surface; // Example mapping
   Color get surfaceContainerHighest =>
-      surfaceContainerHighest; // Example mapping
+      surface.withOpacity(0.9); // Fixed self-reference
 }
 
 class GridStyle {
   final ColorScheme colorScheme;
-  final ButtonStyle buttonStyleActiveAndCurrent;
-  final ButtonStyle buttonStyleActive;
-  final ButtonStyle buttonStyleCurrent;
-  final ButtonStyle buttonStyleDefault;
-  final EdgeInsets buttonPaddingDefault;
-  final EdgeInsets buttonPaddingActive;
-  final EdgeInsets buttonPaddingSustainAndAcitve;
 
+  // Trigger button styles
+  final ButtonStyle triggerButtonStyleActiveAndCurrent;
+  final ButtonStyle triggerButtonStyleActive;
+  final ButtonStyle triggerButtonStyleCurrent;
+  final ButtonStyle triggerButtonStyleDefault;
+  final EdgeInsets triggerButtonPaddingDefault;
+  final EdgeInsets triggerButtonPaddingActive;
+  final EdgeInsets triggerButtonPaddingSustain;
+  final EdgeInsets triggerButtonPaddingSustainAndActive;
+
+  // Velocity button styles
+  final ButtonStyle velocityButtonStyleActiveAndSelected;
+  final ButtonStyle velocityButtonStyleActive;
+  final ButtonStyle velocityButtonStyleSelected;
+  final ButtonStyle velocityButtonStyleDefault;
+
+  final EdgeInsets velocityButtonPaddingDefault;
+  final EdgeInsets velocityButtonPaddingActive;
+  final EdgeInsets velocityButtonPaddingSustain;
+  final EdgeInsets velocityButtonPaddingSustainAndActive;
+
+  // Scale properties
   final int velocityScaleStepSize;
   final int velocityScaleStepNumber;
-
-  final int ptichScaleStepSize;
+  final int pitchScaleStepSize; // Fixed typo
   final int pitchScaleStepNumber;
-
-  final int patternIndex;
 
   const GridStyle({
     required this.colorScheme,
-    required this.buttonStyleActiveAndCurrent,
-    required this.buttonStyleActive,
-    required this.buttonStyleCurrent,
-    required this.buttonStyleDefault,
-    required this.buttonPaddingDefault,
-    required this.buttonPaddingActive,
-    required this.buttonPaddingSustainAndAcitve,
-    required this.pitchScaleStepNumber,
-    required this.velocityScaleStepNumber,
+    required this.triggerButtonStyleActiveAndCurrent,
+    required this.triggerButtonStyleActive,
+    required this.triggerButtonStyleCurrent,
+    required this.triggerButtonStyleDefault,
+    required this.triggerButtonPaddingDefault,
+    required this.triggerButtonPaddingActive,
+    required this.triggerButtonPaddingSustain,
+    required this.triggerButtonPaddingSustainAndActive,
+    required this.velocityButtonStyleActiveAndSelected,
+    required this.velocityButtonStyleActive,
+    required this.velocityButtonStyleSelected,
+    required this.velocityButtonStyleDefault,
+    required this.velocityButtonPaddingDefault,
+    required this.velocityButtonPaddingActive,
+    required this.velocityButtonPaddingSustain,
+    required this.velocityButtonPaddingSustainAndActive,
     required this.velocityScaleStepSize,
-    required this.ptichScaleStepSize,
-    required this.patternIndex,
+    required this.velocityScaleStepNumber,
+    required this.pitchScaleStepSize,
+    required this.pitchScaleStepNumber,
   });
 
-  // Pure styling methods only - no business logic
-  ButtonStyle getButtonStyle({
+  ButtonStyle getTriggerButtonStyle({
     required bool isActive,
     required bool isCurrent,
   }) {
-    if (isActive && isCurrent) return buttonStyleActiveAndCurrent;
-    if (isActive) return buttonStyleActive;
-    if (isCurrent) return buttonStyleCurrent;
-    return buttonStyleDefault;
+    if (isActive && isCurrent) return triggerButtonStyleActiveAndCurrent;
+    if (isActive) return triggerButtonStyleActive;
+    if (isCurrent) return triggerButtonStyleCurrent;
+    return triggerButtonStyleDefault;
   }
 
-  EdgeInsets getPadding({required bool isActive, required bool hasSustain}) {
-    if (isActive && hasSustain) return buttonPaddingSustainAndAcitve;
-    if (isActive) return buttonPaddingActive;
-    return buttonPaddingDefault;
+  // Pure styling methods only - no business logic
+  ButtonStyle getVelocityButtonStyle({
+    required bool isActive,
+    required bool isSelected,
+  }) {
+    if (isActive && isSelected) return velocityButtonStyleActiveAndSelected;
+    if (isActive) return velocityButtonStyleActive;
+    if (isSelected) return velocityButtonStyleSelected;
+    return velocityButtonStyleDefault;
   }
 
-  /// Provides a default GridStyle instance based on the provided ColorScheme.
-  /// You can customize these default values to match your app's design system.
+  EdgeInsets getTriggerButtonPadding({
+    required bool isActive,
+    required bool hasSustain,
+  }) {
+    if (isActive && hasSustain) return triggerButtonPaddingSustainAndActive;
+    if (isActive) return triggerButtonPaddingActive;
+    if (hasSustain) return triggerButtonPaddingSustain;
+    return triggerButtonPaddingDefault;
+  }
+
+  EdgeInsets getVelocityButtonPadding({
+    required bool isActive,
+    required bool hasSustain,
+  }) {
+    if (isActive && hasSustain) return velocityButtonPaddingSustainAndActive;
+    if (isActive) return velocityButtonPaddingActive;
+    if (hasSustain) return velocityButtonPaddingSustain;
+    return velocityButtonPaddingDefault;
+  }
+
   static GridStyle fromColorScheme(ColorScheme cs) {
     return GridStyle(
       colorScheme: cs,
-      buttonStyleActiveAndCurrent: ElevatedButton.styleFrom(
-        backgroundColor: cs.secondaryFixed, // Using your custom extension
-        foregroundColor: cs.onSecondary,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        elevation: 0,
-        visualDensity: VisualDensity.compact,
-      ),
-      buttonStyleActive: ElevatedButton.styleFrom(
-        backgroundColor: cs.secondaryFixedDim, // Using your custom extension
-        foregroundColor: cs.onSecondary,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        elevation: 0,
-        visualDensity: VisualDensity.compact,
-      ),
-      buttonStyleCurrent: ElevatedButton.styleFrom(
-        backgroundColor:
-            cs.surfaceContainerLowest, // Using your custom extension
-        foregroundColor: cs.onSurface,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        elevation: 0,
-        visualDensity: VisualDensity.compact,
-      ),
-      buttonStyleDefault: ElevatedButton.styleFrom(
-        backgroundColor:
-            cs.surfaceContainerHighest, // Using your custom extension
-        foregroundColor: cs.onSurface,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        elevation: 0,
-        visualDensity: VisualDensity.compact,
-      ),
-      buttonPaddingDefault: const EdgeInsets.fromLTRB(0, 10, 5, 10),
-      buttonPaddingActive: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-      buttonPaddingSustainAndAcitve: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      velocityScaleStepNumber: 8,
-      velocityScaleStepSize: 1,
-      pitchScaleStepNumber: 8,
-      ptichScaleStepSize: 1,
 
-      patternIndex: 0,
+      // Trigger button styles
+      triggerButtonStyleActiveAndCurrent: ElevatedButton.styleFrom(
+        backgroundColor: cs.primaryFixed,
+        foregroundColor: cs.onPrimary,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 2,
+        visualDensity: VisualDensity.compact,
+      ),
+      triggerButtonStyleActive: ElevatedButton.styleFrom(
+        backgroundColor: cs.surfaceBright,
+        foregroundColor: cs.primary,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 2,
+        visualDensity: VisualDensity.compact,
+      ),
+      triggerButtonStyleCurrent: ElevatedButton.styleFrom(
+        backgroundColor: cs.surfaceContainerLowest,
+        foregroundColor: cs.onSurface,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 0,
+        visualDensity: VisualDensity.compact,
+      ),
+      triggerButtonStyleDefault: ElevatedButton.styleFrom(
+        backgroundColor: cs.surfaceContainerHighest,
+        foregroundColor: cs.onSurface,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 0,
+        visualDensity: VisualDensity.compact,
+      ),
+
+      // Trigger button padding
+      triggerButtonPaddingDefault: const EdgeInsets.fromLTRB(0, 5, 2, 0),
+      triggerButtonPaddingActive: const EdgeInsets.fromLTRB(0, 5, 2, 0),
+      triggerButtonPaddingSustain: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+      triggerButtonPaddingSustainAndActive: const EdgeInsets.fromLTRB(
+        0,
+        5,
+        0,
+        0,
+      ),
+
+      velocityButtonStyleActiveAndSelected: ElevatedButton.styleFrom(
+        backgroundColor: cs.secondaryFixedDim,
+        foregroundColor: cs.onPrimary,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 5,
+        visualDensity: VisualDensity.compact,
+      ),
+      velocityButtonStyleActive: ElevatedButton.styleFrom(
+        backgroundColor: cs.surfaceBright,
+        foregroundColor: cs.primary,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 0,
+        visualDensity: VisualDensity.compact,
+      ),
+
+      // SELECTED
+      velocityButtonStyleSelected: ElevatedButton.styleFrom(
+        backgroundColor: cs.secondaryFixed,
+        foregroundColor: cs.primary,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 5,
+        visualDensity: VisualDensity.compact,
+      ),
+
+      velocityButtonStyleDefault: ElevatedButton.styleFrom(
+        backgroundColor: cs.surfaceContainerHighest,
+        foregroundColor: cs.onSurface,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        elevation: 0,
+        visualDensity: VisualDensity.compact,
+      ),
+
+      velocityButtonPaddingDefault: const EdgeInsets.fromLTRB(0, 0, 2, 0),
+      velocityButtonPaddingActive: const EdgeInsets.fromLTRB(0, 0, 2, 0),
+      velocityButtonPaddingSustain: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      velocityButtonPaddingSustainAndActive: const EdgeInsets.fromLTRB(
+        0,
+        0,
+        0,
+        0,
+      ),
+
+      // Scale properties
+      velocityScaleStepNumber: 7,
+      velocityScaleStepSize: 8,
+      pitchScaleStepNumber: 7,
+      pitchScaleStepSize: 8,
     );
   }
 }

@@ -92,6 +92,7 @@ impl SequencerActor {
                     if let Some(step) = pattern.steps.get_mut(step_index as usize) {
                         step.note = note;
                         debug_print!("Step {} note set to: {}", step_index, note);
+                         self.state.send_signal_to_dart();
                     }
                 }
             }
@@ -105,6 +106,7 @@ impl SequencerActor {
                     if let Some(step) = pattern.steps.get_mut(step_index as usize) {
                         step.velocity = velocity;
                         debug_print!("Step {} velocity set to: {}", step_index, velocity);
+                         self.state.send_signal_to_dart();
                     }
                 }
             }
@@ -117,6 +119,7 @@ impl SequencerActor {
                     if let Some(step) = pattern.steps.get_mut(step_index as usize) {
                         step.sustain = !step.sustain;
                         debug_print!("Step {} sustain toggled to: {}", step_index, step.sustain);
+                         self.state.send_signal_to_dart();
                     }
                 }
             }
@@ -195,8 +198,8 @@ pub struct SequencerStep {
 impl SequencerStep {
     pub fn new() -> Self {
         SequencerStep {
-            note: 60,
-            velocity: 100,
+            note: 0,
+            velocity: 0,
             active: false,
             sustain: false,
         }

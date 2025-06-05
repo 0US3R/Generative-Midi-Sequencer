@@ -62,7 +62,6 @@ class _StepGridState extends State<StepGrid> {
   }
 
   Widget _buildVelocityWidget(SequencerStep step, int stepIndex) {
-    // FIX 3: Remove extra Expanded wrapper - VelocityView handles its own expansion
     return VelocityView(
       step: step,
       patternIndex: patternIndex,
@@ -72,7 +71,6 @@ class _StepGridState extends State<StepGrid> {
   }
 
   Widget _buildTriggerWidget(SequencerStep step, int stepIndex) {
-    // FIX 4: Remove extra Expanded wrapper - TriggerView handles its own expansion
     return TriggerView(
       step: step,
       patternIndex: patternIndex,

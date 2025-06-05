@@ -22,22 +22,26 @@ class TriggerView extends StatelessWidget {
     return Expanded(
       flex: 1,
       child: Container(
-        padding: gridStyle.getPadding(
+        padding: gridStyle.getTriggerButtonPadding(
           isActive: step.active,
           hasSustain: step.sustain,
         ),
         child: ElevatedButton(
-          style: gridStyle.getButtonStyle(
+          style: gridStyle.getTriggerButtonStyle(
             isActive: step.active,
             isCurrent: false,
           ),
+          onLongPress: SequencerCommandToggleStepSustain(
+            stepIndex: stepIndex,
+            patternIndex: patternIndex,
+          ).sendSignalToRust,
           onPressed: () {
             SequencerCommandToggleStep(
               stepIndex: stepIndex,
               patternIndex: patternIndex,
             ).sendSignalToRust();
           },
-          child: Text("T$stepIndex"), // Better labeling
+          child: step.active ? Text("I") : Text("O"), // Better labeling
         ),
       ),
     );

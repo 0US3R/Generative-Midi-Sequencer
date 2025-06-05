@@ -1,0 +1,1 @@
+ /home/bernhard/side_projects/Generative-Midi-Sequencer/.dart_tool/flutter_build/f922cf63c1ad936beb8b465c7f89f646/native_assets.json: 

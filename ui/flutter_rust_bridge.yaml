@@ -1,3 +1,0 @@
-rust_input: crate::app
-rust_root: ..//
-dart_output: lib/src/rust

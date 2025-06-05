@@ -93,3 +93,12 @@ tests/rustdoc-gui/src/**.lock
 flake.lock
 /default.nix
 
+
+# Rust related
+/.cargo/
+/target/
+
+# Generated signals
+/lib/src/bincode
+/lib/src/serde
+/lib/src/bindings
